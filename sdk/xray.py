@@ -13,6 +13,24 @@ from typing import Dict, Any, Optional, List, Callable
 from datetime import datetime
 from uuid import uuid4
 
+# Import models for optional validation
+# Models are OPTIONAL - SDK works with plain dicts too for maximum compatibility
+_USE_MODELS = True
+try:
+    from .models import (
+        CreateExecutionRequest, CreateStepRequest, CreateEvaluationRequest,
+        UpdateStepRequest, ExecutionMetadata, RuleDefinition
+    )
+except ImportError:
+    # Fallback if models not available - SDK still works with dicts
+    CreateExecutionRequest = None
+    CreateStepRequest = None
+    CreateEvaluationRequest = None
+    UpdateStepRequest = None
+    ExecutionMetadata = None
+    RuleDefinition = None
+    _USE_MODELS = False
+
 
 class XRayError(Exception):
     """Base exception for X-Ray SDK errors."""
@@ -36,7 +54,8 @@ class XRay:
         >>> xray.end_execution(status="completed")
     """
     
-    def __init__(self, execution_name: str, api_url: str = "http://localhost:8000", timeout: int = 30):
+    def __init__(self, execution_name: str, api_url: str = "http://localhost:8000", 
+                 timeout: int = 30, validate_requests: bool = True):
         """
         Initialize X-Ray client.
         
@@ -44,10 +63,13 @@ class XRay:
             execution_name: Name for this execution
             api_url: Base URL of the X-Ray API server (can be any backend)
             timeout: Request timeout in seconds (default: 30)
+            validate_requests: If True, validate requests using models (default: True).
+                             Set to False to disable validation for custom backends.
         """
         self.execution_name = execution_name
         self.api_url = api_url.rstrip('/')
         self.timeout = timeout
+        self.validate_requests = validate_requests and _USE_MODELS
         self.execution_id: Optional[str] = None
         self.current_step_id: Optional[str] = None
     
@@ -56,7 +78,7 @@ class XRay:
         Start a new execution.
         
         Args:
-            metadata: Optional metadata dictionary
+            metadata: Optional metadata dictionary (or ExecutionMetadata model)
             
         Returns:
             execution_id
@@ -65,13 +87,28 @@ class XRay:
             XRayError: If the API request fails
         """
         try:
+            # Prepare request data
+            request_data = {
+                "name": self.execution_name,
+                "metadata": metadata or {}
+            }
+            
+            # Optional validation (only if enabled and models available)
+            if self.validate_requests and CreateExecutionRequest:
+                try:
+                    # Validate using model
+                    request = CreateExecutionRequest(**request_data)
+                    json_data = request.dict(exclude_none=True)
+                except Exception as e:
+                    # If validation fails, still send the request (backend will validate)
+                    # This allows custom backends with different models
+                    json_data = request_data
+            else:
+                json_data = request_data
 
             response = requests.post(
                 f"{self.api_url}/api/executions",
-                json={
-                    "name": self.execution_name,
-                    "metadata": metadata or {}
-                },
+                json=json_data,
                 timeout=self.timeout
             )
             response.raise_for_status()
@@ -108,14 +145,40 @@ class XRay:
             raise ValueError("Must call start_execution() first")
         
         try:
+            # Convert rules to dicts (handle both dicts and model objects)
+            rules_list = []
+            if rules:
+                for rule in rules:
+                    if isinstance(rule, dict):
+                        rules_list.append(rule)
+                    elif hasattr(rule, 'dict'):
+                        # It's a model object, convert to dict
+                        rules_list.append(rule.dict())
+                    else:
+                        rules_list.append(rule)
+            
+            request_data = {
+                "name": name,
+                "type": step_type,
+                "input": input_data or {},
+                "rules": rules_list
+            }
+            
+            # Optional validation (only if enabled and models available)
+            if self.validate_requests and CreateStepRequest:
+                try:
+                    # Validate using model
+                    request = CreateStepRequest(**request_data)
+                    json_data = request.dict(exclude_none=True)
+                except Exception as e:
+                    # If validation fails, still send the request (backend will validate)
+                    json_data = request_data
+            else:
+                json_data = request_data
+            
             response = requests.post(
                 f"{self.api_url}/api/executions/{self.execution_id}/steps",
-                json={
-                    "name": name,
-                    "type": step_type,
-                    "input": input_data or {},
-                    "rules": rules or []
-                },
+                json=json_data,
                 timeout=self.timeout
             )
             response.raise_for_status()
@@ -149,14 +212,28 @@ class XRay:
             raise ValueError("Must call start_step() first")
         
         try:
+            request_data = {
+                "entity_id": entity_id,
+                "value": value,
+                "passed": passed,
+                "reason": reason
+            }
+            
+            # Optional validation (only if enabled and models available)
+            if self.validate_requests and CreateEvaluationRequest:
+                try:
+                    # Validate using model
+                    request = CreateEvaluationRequest(**request_data)
+                    json_data = request.dict(exclude_none=True)
+                except Exception as e:
+                    # If validation fails, still send the request (backend will validate)
+                    json_data = request_data
+            else:
+                json_data = request_data
+            
             response = requests.post(
                 f"{self.api_url}/api/steps/{self.current_step_id}/evaluations",
-                json={
-                    "entity_id": entity_id,
-                    "value": value,
-                    "passed": passed,
-                    "reason": reason
-                },
+                json=json_data,
                 timeout=self.timeout
             )
             response.raise_for_status()
@@ -178,11 +255,35 @@ class XRay:
             raise ValueError("No active step to end")
         
         try:
+            request_data = {
+                "output": output or {},
+                "ended_at": datetime.utcnow()
+            }
+            
+            # Optional validation (only if enabled and models available)
+            if self.validate_requests and UpdateStepRequest:
+                try:
+                    # Validate using model
+                    request = UpdateStepRequest(**request_data)
+                    json_data = request.dict(exclude_none=True)
+                    # Convert datetime to ISO string
+                    if "ended_at" in json_data and isinstance(json_data["ended_at"], datetime):
+                        json_data["ended_at"] = json_data["ended_at"].isoformat() + "Z"
+                except Exception as e:
+                    # If validation fails, still send the request (backend will validate)
+                    json_data = {
+                        "output": output or {},
+                        "ended_at": datetime.utcnow().isoformat() + "Z"
+                    }
+            else:
+                json_data = {
+                    "output": output or {},
+                    "ended_at": datetime.utcnow().isoformat() + "Z"
+                }
+            
             response = requests.patch(
                 f"{self.api_url}/api/steps/{self.current_step_id}",
-                json={
-                    "output": output or {}
-                },
+                json=json_data,
                 timeout=self.timeout
             )
             response.raise_for_status()
