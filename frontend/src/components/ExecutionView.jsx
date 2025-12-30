@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import Timeline from './Timeline'
@@ -10,8 +10,15 @@ function ExecutionView() {
   const navigate = useNavigate()
   const [execution, setExecution] = useState(null)
   const [selectedStep, setSelectedStep] = useState(null)
+  const [selectedStepId, setSelectedStepId] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const selectedStepIdRef = useRef(null)
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    selectedStepIdRef.current = selectedStepId
+  }, [selectedStepId])
 
   useEffect(() => {
     fetchExecution()
@@ -25,9 +32,22 @@ function ExecutionView() {
       setExecution(response.data)
       setError(null)
       
-      // Auto-select first step if none selected
-      if (!selectedStep && response.data.steps?.length > 0) {
+      const currentStepId = selectedStepIdRef.current
+      
+      // Update selectedStep to point to the new step object if we have a selectedStepId
+      if (currentStepId && response.data.steps?.length > 0) {
+        const updatedStep = response.data.steps.find(step => step.step_id === currentStepId)
+        if (updatedStep) {
+          setSelectedStep(updatedStep)
+        } else {
+          // Step was removed, clear selection
+          setSelectedStep(null)
+          setSelectedStepId(null)
+        }
+      } else if (!currentStepId && response.data.steps?.length > 0) {
+        // Auto-select first step if none selected
         setSelectedStep(response.data.steps[0])
+        setSelectedStepId(response.data.steps[0].step_id)
       }
     } catch (err) {
       setError('Failed to fetch execution')
@@ -35,6 +55,11 @@ function ExecutionView() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleStepSelect = (step) => {
+    setSelectedStep(step)
+    setSelectedStepId(step.step_id)
   }
 
   const formatDate = (dateString) => {
@@ -120,7 +145,7 @@ function ExecutionView() {
           <Timeline
             steps={execution.steps || []}
             selectedStep={selectedStep}
-            onStepSelect={setSelectedStep}
+            onStepSelect={handleStepSelect}
           />
         </div>
         

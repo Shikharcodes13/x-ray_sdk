@@ -1,0 +1,36 @@
+﻿date,airline,ch_code,num_code,dep_time,from,time_taken,stop,arr_time,to,price
+11-02-2022,Air India,AI,868,18:00,Delhi,02h 00m,non-stop ,20:00,Mumbai,"25,612"
+11-02-2022,Air India,AI,624,19:00,Delhi,02h 15m,non-stop ,21:15,Mumbai,"25,612"
+11-02-2022,Air India,AI,531,20:00,Delhi,24h 45m,"1-stop
+												
+												",20:45,Mumbai,"42,220"
+11-02-2022,Air India,AI,839,21:25,Delhi,26h 30m,"1-stop
+												
+												",23:55,Mumbai,"44,450"
+11-02-2022,Air India,AI,544,17:15,Delhi,06h 40m,"1-stop
+												
+												",23:55,Mumbai,"46,690"
+11-02-2022,Vistara,UK,985,19:50,Delhi,02h 10m,non-stop ,22:00,Mumbai,"50,264"
+11-02-2022,Air India,AI,479,21:15,Delhi,17h 45m,"1-stop
+												
+												",15:00,Mumbai,"50,669"
+11-02-2022,Air India,AI,473,18:40,Delhi,22h 45m,"1-stop
+												
+												",17:25,Mumbai,"51,059"
+11-02-2022,Vistara,UK,871,20:35,Delhi,17h 55m,"1-stop
+												
+												",14:30,Mumbai,"51,731"
+
+												",20:05,Mumbai,"59,033"
+23-03-2022,Air India,AI,762,20:15,Delhi,21h 35m,"1-stop
+												
+												",17:50,Mumbai,"59,033"
+23-03-2022,Air India,AI,762,20:15,Delhi,23h 50m,"1-stop
+												
+												",20:05,Mumbai,"59,033"
+23-03-2022,Air India,AI,764,16:55,Delhi,24h 55m,"1-stop
+												
+												",17:50,Mumbai,"59,033"
+23-03-2022,Air India,AI,764,16:55,Delhi,27h 10m,"1-stop
+												
+												",20:05,Mumbai,"59,033"
