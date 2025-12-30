@@ -1,0 +1,31 @@
+.json-viewer {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+.json-content {
+  margin: 0;
+  font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+  white-space: pre;
+}
+
+.json-empty {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Syntax highlighting for JSON (basic) */
+.json-content {
+  color: var(--text-primary);
+}
+
+/* You can enhance this with a proper JSON syntax highlighter library if needed */
+

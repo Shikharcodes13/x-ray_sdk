@@ -1,0 +1,157 @@
+.timeline {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.timeline-header h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.step-count {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  background: var(--bg-tertiary);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.timeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.timeline-item:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
+}
+
+.timeline-item.selected {
+  background: var(--bg-tertiary);
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.1);
+}
+
+.timeline-connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.status-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.status-icon {
+  font-size: 0.875rem;
+  font-weight: bold;
+  color: white;
+}
+
+.connector-line {
+  width: 2px;
+  flex: 1;
+  min-height: 20px;
+  background: var(--border-color);
+  margin-top: 0.5rem;
+}
+
+.timeline-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.step-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.step-number {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  background: var(--bg-tertiary);
+  padding: 0.125rem 0.5rem;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.step-name {
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+}
+
+.step-meta {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.step-type {
+  text-transform: uppercase;
+  font-size: 0.6875rem;
+  background: var(--bg-tertiary);
+  padding: 0.125rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.step-duration {
+  font-family: monospace;
+}
+
+.step-evaluations {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.eval-count {
+  color: var(--text-secondary);
+}
+
+.eval-failed {
+  color: var(--accent-red);
+  font-weight: 500;
+}
+
