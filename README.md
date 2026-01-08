@@ -1,4 +1,4 @@
-# X-Ray Debugging System
+.# X-Ray Debugging System
 
 A powerful execution tracking and debugging system for multi-step, non-deterministic algorithmic systems. Unlike traditional tracing that shows *what* happened, X-Ray shows *why* decisions were made at each step, making it easy to debug complex pipelines.
 
@@ -279,7 +279,7 @@ See `examples/integration_modes.py` and `examples/README_INTEGRATION.md` for det
 
 - **In-memory storage**: Chosen for simplicity and to focus on the core X-Ray concept. Easy to replace with a database.
 - **HTTP-based**: Simple, language-agnostic, works over networks. Could be optimized with gRPC or WebSockets for high-throughput scenarios.
-- **Polling for updates**: Simple to implement. Could be upgraded to WebSockets for real-time updates.
+
 - **Python SDK only**: Focused on one language for the demo. The API contract allows SDKs in any language.
 
 ## ⚠️ Known Limitations
